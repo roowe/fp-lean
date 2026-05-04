@@ -7,3 +7,5 @@ _out/
 .DS_Store
 .lake
 venv
+.claude/settings.local.json
+.plan.json

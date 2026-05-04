@@ -1,0 +1,97 @@
+---
+title: 类型类（Type Classes）
+created: 2026-05-04
+updated: 2026-05-04
+type: concept
+tags: [type-class, polymorphism]
+sources: [book/FPLean/TypeClasses/Polymorphism.lean, book/FPLean/TypeClasses/Pos.lean, book/FPLean/TypeClasses/OutParams.lean, book/FPLean/TypeClasses/Indexing.lean, book/FPLean/TypeClasses/StandardClasses.lean, book/FPLean/TypeClasses/Coercions.lean]
+---
+
+# 类型类（Type Classes）
+
+## 核心思想
+
+类型类是 Lean 的**重载机制**——通过实例隐式参数 `[C α]`，编译器自动搜索合适的方法实现。类型类本质是结构体 + 自动实例搜索。
+
+## 定义与使用
+
+```lean
+class Plus (α : Type) where
+  plus : α → α → α
+
+instance : Plus Nat where
+  plus := Nat.add
+
+#eval Plus.plus 3 5    -- 8
+```
+
+方括号 `[Plus α]` 是**实例隐式参数**，Lean 通过递归实例搜索自动填充。
+
+## 核心标准类型类
+
+| 类型类 | 运算符 | 说明 |
+|--------|--------|------|
+| `HAdd α β γ` | `x + y` | 异构加法 |
+| `Add α` (= `HAdd α α α`) | `x + y` | 同构加法 |
+| `HMul α β γ` | `x * y` | 异构乘法 |
+| `OfNat α n` | `37` | 数字字面量重载 |
+| `ToString α` | `s!"{x}"` | 转字符串 |
+| `BEq α` | `x == y` | 布尔相等（返回 `Bool`） |
+| `Ord α` | `compare` | 三路比较（`lt`/`eq`/`gt`） |
+| `Hashable α` | `hash` | 哈希（返回 `UInt64`） |
+| `Append α` | `xs ++ ys` | 追加 |
+| `Functor f` | `f <$> x`, `fmap` | [[functor-applicative-monad|函子]] |
+| `GetElem coll idx item inBounds` | `xs[i]` | 安全索引 |
+
+## 输出参数
+
+`outParam` 标记的参数不需要提前确定，通过搜索结果填充：
+
+```lean
+class HPlus (α : Type) (β : Type) (γ : outParam Type) where
+  hPlus : α → β → γ
+```
+
+## 默认实例
+
+`@[default_instance]` 在类型信息不完整时提供回退选择。
+
+## GetElem 类型类
+
+四参数类型类，实现安全索引：
+
+```lean
+class GetElem (coll : Type) (idx : Type) (item : outParam Type)
+    (inBounds : outParam (coll → idx → Prop)) where
+  getElem : (c : coll) → (i : idx) → inBounds c i → item
+```
+
+索引合法性由 `inBounds` 命题函数定义，详见 [[propositions-and-proofs]]。
+
+## 强制转换（Coercions）
+
+四种强制转换类型类，在类型不匹配时自动插入：
+
+| 类型类 | 方向 | 例子 |
+|--------|------|------|
+| `Coe α β` | `α → β` | `Pos → Nat` |
+| `CoeDep α val β` | 特定值 `→ β` | 非空列表 `→ NonEmptyList` |
+| `CoeSort α Sort` | `α → Type/Prop` | `Bool → Prop`（`b = true`） |
+| `CoeFun α ftype` | `α → 函数` | `Adder → (Nat → Nat)` |
+
+Lean 自动组合多个 `Coe` 形成**强制转换链**。`↑` 语法手动插入。
+
+## 自动派生
+
+```lean
+deriving instance BEq, Hashable, Repr for Pos
+```
+
+支持 `BEq`、`Hashable`、`Repr`、`Inhabited`、`Ord` 等。
+
+## 相关概念
+
+- [[polymorphism]] — 参数化多态
+- [[functor-applicative-monad]] — Functor 类型类
+- [[structures]] — 类型类本质是结构体
+- [[propositions-and-proofs]] — `Decidable` 类型类
