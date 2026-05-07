@@ -13,6 +13,16 @@ sources: [book/FPLean/TypeClasses/Polymorphism.lean, book/FPLean/TypeClasses/Pos
 
 类型类是 Lean 的**重载机制**——通过实例隐式参数 `[C α]`，编译器自动搜索合适的方法实现。类型类本质是结构体 + 自动实例搜索。
 
+## 与 Interface 的异同
+
+**同**：都是"定义抽象行为 → 具体类型实现 → 使用时自动找具体实现"。流程一样。
+
+**异**：谁能给类型添加实现。
+- Interface：只有定义该类型的人能加。写在类定义里。
+- Type class：任何人都能加。写在类型定义外面。
+
+实际后果：你拿到一个第三方库的类型，想让它支持某个行为——interface 做不到，type class 可以。
+
 ## 定义与使用
 
 ```lean
