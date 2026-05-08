@@ -29,18 +29,31 @@ Alternative      -- failure + orElse (<|>)
 
 ## Functor（函子）
 
+对包装里的值施加函数，包装不变。
+
 ```lean
 class Functor (f : Type u → Type v) where
   map : (α → β) → f α → f β
 ```
 
-法则：
-1. **恒等**：`map id = id`
-2. **合成**：`map (g ∘ f) = map g ∘ map f`
+`f` 是类型构造器——吃进一个类型，吐出一个类型（如 `Option`、`List`）。`map` 把函数施加到 `f` 包装里的值上，包装本身不变：
+
+```lean
+-- f = Option 时，map 的类型是 (α → β) → Option α → Option β
+map (fun n => n + 1) (some 5)    -- some 6
+map (fun n => n + 1) none        -- none（没有值，什么都不做）
+
+-- f = List 时，map 的类型是 (α → β) → List α → List β
+map (fun n => n + 1) [1, 2, 3]   -- [2, 3, 4]
+```
+
+和 Monad 的区别：Functor 只能"改里面的值"，不能"根据里面的值决定下一步做什么"——那是 `>>=` 的事。
 
 运算符：`g <$> x` 等价于 `Functor.map g x`
 
 ## Applicative（应用函子）
+
+Functor 的升级版。两个新能力：`pure`（包装）和 `seq`（包装里的函数施加到包装里的值）。
 
 ```lean
 class Applicative (f : Type → Type) extends Functor f where
@@ -48,7 +61,35 @@ class Applicative (f : Type → Type) extends Functor f where
   seq : f (α → β) → (Unit → f α) → f β  -- 写作 <*>
 ```
 
-关键：**函数本身也被包裹在类型中**，前一步的值**不能**影响后续计算的选择。
+`seq` 的第二个参数是 `Unit → f α` 而不是 `f α`，这是为了延迟求值——不立刻算第二个参数，等第一个成功再说。`Unit →` 可以当成惰性包装，忽略它，直接看返回的 `f α` 就行。
+
+`pure` 就是加包装。`seq` 比较绕，换成具体类型看：
+
+```lean
+-- f = Option 时，seq 的类型是 Option (α → β) → Option α → Option β
+-- 函数被包装在 Option 里，值也被包装在 Option 里
+some (fun n => n + 1) <*> some 5      -- some 6（两边都有值，正常算）
+some (fun n => n + 1) <*> none        -- none（值那边没有，短路）
+none <*> some 5                       -- none（函数那边没有，短路）
+```
+
+和 Functor、Monad 的区别，用一个例子说清：
+
+```lean
+-- Functor：函数是普通的，只能改一个包装里的值
+map (fun x => x + 1) (some 5)             -- some 6
+
+-- Applicative：函数也可以被包装，能组合多个包装值
+-- 但前一步的结果不能影响"接下来做什么"
+let add x y := x + y
+some add <*> some 3 <*> some 5            -- some 8
+
+-- Monad：前一步的结果能影响下一步（Applicative 做不到）
+some 5 >>= fun x =>
+  if x > 3 then some "大" else none       -- some "大"（根据 x 的值做决定）
+```
+
+一句话：**Functor 改一个值，Applicative 组合多个值，Monad 根据值做决定。**
 
 ### Applicative 四法则
 
@@ -57,9 +98,10 @@ class Applicative (f : Type → Type) extends Functor f where
 3. **同态**：`pure f <*> pure x = pure (f x)`
 4. **交换**：`u <*> pure x = pure (fun f => f x) <*> u`
 
-### Validate — 累积错误的 Applicative
+### Validate — 累积错误的 Applicative（书里的示例，非标准库）
 
 ```lean
+-- 这不是 Lean 标准库自带的类型，是书里设计的示例
 inductive Validate (ε α : Type) : Type where
   | ok : α → Validate ε α
   | errors : NonEmptyList ε → Validate ε α
@@ -69,12 +111,7 @@ Validate 是 Applicative 但**不是** Monad——因为它累积所有错误而
 
 ## Monad（单子）
 
-```lean
-class Monad (m : Type → Type) extends Applicative m where
-  bind : m α → (α → m β) → m β
-```
-
-Monad 允许前一步的值影响后续计算。只需实现 `bind` + `pure`，自动获得 `map`、`seq` 等。
+Monad 允许前一步的值影响后续计算。只需实现 `bind` + `pure`，自动获得 `map`、`seq` 等。详见 [[monads]]。
 
 ### 层级间的约束
 
