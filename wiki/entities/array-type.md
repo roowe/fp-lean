@@ -62,6 +62,38 @@ for h : i in [:lines.size] do
 | for 循环 | 支持（带证明） | 需要转 Array 或用递归 |
 | 适用场景 | 索引密集、排序 | 模式匹配、递归处理 |
 
+## 项目实践
+
+> Array 在 05-safe-sort 项目中是核心数据结构，展示了 `Fin` 安全索引和 `swap` 原地操作。
+
+```lean
+-- 05-safe-sort/SafeSort/Basic.lean — 用 Fin 保证索引安全的插入排序
+def insertSorted [Ord α] (arr : Array α) (i : Fin arr.size) : Array α :=
+  match i with
+  | ⟨0, _⟩ => arr
+  | ⟨i' + 1, _⟩ =>
+    have : i' < arr.size := by grind
+    match Ord.compare arr[i'] arr[i] with
+    | .lt | .eq => arr
+    | .gt => insertSorted (arr.swap i' i) ⟨i', by simp [*]⟩
+termination_by i.val
+```
+
+03-grep 项目中用 `Array String` 存储文件行，通过带证明的 `for` 循环安全访问：
+
+```lean
+-- 03-grep/MiniGrep/Search.lean
+for h : i in [:lines.size] do
+  let line := lines[i]  -- h 证明 i < lines.size
+  if (← matchLine line) then results := results.push (i + 1, line)
+```
+
+| 项目 | Array 用途 |
+|------|-----------|
+| 02-json-parser | `Array Char` 作为解析输入源（ParseState.src） |
+| 03-grep | `Array String` 存文件行，带索引循环 |
+| 05-safe-sort | `Array α` 排序核心，`Fin` 索引 + `swap` |
+
 ## 相关概念
 
 - [[list-type]] — 链表类型

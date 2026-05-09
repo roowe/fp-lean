@@ -1,7 +1,7 @@
 ---
 title: 单子变换器（Monad Transformers）
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [monad-transformer, monad]
 sources: [book/FPLean/MonadTransformers/ReaderIO.lean, book/FPLean/MonadTransformers/Transformers.lean, book/FPLean/MonadTransformers/Order.lean, book/FPLean/MonadTransformers/Do.lean]
@@ -120,6 +120,28 @@ repeat IO.println "Spam!"
 | `|>` | 正向管道 |
 | `<|` | 反向管道 |
 | `|>.method` | 管道点记法 |
+
+## 项目实践
+
+### 03-grep — ReaderT + ExceptT 组合
+
+用 `ReaderT Config (ExceptT String Id)` 组合只读环境和异常效果：
+
+```lean
+abbrev SearchM := ReaderT Config (ExceptT String Id)
+
+def matchLine (line : String) : SearchM Bool := do
+  let cfg ← read  -- 从 ReaderT 环境读取配置
+  let pat := if cfg.ignoreCase then cfg.pattern.toLower else cfg.pattern
+  let target := if cfg.ignoreCase then line.toLower else line
+  return target.contains pat
+```
+
+解包时从外到内：`ReaderT.run` 传入配置，`ExceptT.run` 取出 `Except` 值：
+
+```lean
+let result := (searchLines lines).run config |> ExceptT.run
+```
 
 ## 相关概念
 

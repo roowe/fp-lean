@@ -1,7 +1,7 @@
 ---
 title: 多态
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [polymorphism, types, getting-started]
 sources: [book/FPLean/GettingToKnow/Polymorphism.lean]
@@ -80,6 +80,24 @@ let y : Int := -(Int.ofNat x)    -- Nat → Int，然后取负
 
 -- 科学计数法构造浮点
 Float.ofScientific 314 false (-2)  -- 3.14
+```
+
+## 项目实践
+
+多态在以下项目中广泛使用：
+
+- **01-calc** — 解析器中的多态函数
+- **02-json-parser** — 多态类型如 `Validate ε α`
+- **03-grep** — 多态 monad 变换器 `ReaderT`/`ExceptT`
+- **06-typed-db** — `DBType.asType` 多态映射
+- **08-type-checker** — 多态类型定义
+
+示例：02-json-parser 的 `Validate`（`Validate.lean`）— 类型参数 `ε` 和 `α` 使同一类型适配不同错误类型和结果类型：
+
+```lean
+inductive Validate (ε : Type) (α : Type) where
+  | ok : α → Validate ε α
+  | errors : List ε → Validate ε α
 ```
 
 ## 相关概念

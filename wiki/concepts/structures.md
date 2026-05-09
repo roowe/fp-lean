@@ -1,7 +1,7 @@
 ---
 title: 结构体
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [structures, lean-syntax, getting-started]
 sources: [book/FPLean/GettingToKnow/Structures.lean]
@@ -72,6 +72,36 @@ structure Monster extends MythicalCreature where
 ```
 
 详见 [[functor-applicative-monad]] 中关于类型类继承的讨论。
+
+## 项目实践
+
+结构体在以下项目中用于组织核心数据：
+
+- **02-json-parser** — `ParseState` 封装解析位置
+- **03-grep** — `Config` 封装命令行配置
+- **06-typed-db** — `Column` 描述数据库列
+- **08-type-checker** — `Context`/`Env` 管理类型环境
+
+示例：03-grep 的 `Config`（`Config.lean`）：
+
+```lean
+structure Config where
+  pattern : String
+  ignoreCase : Bool := false
+  showLineNumbers : Bool := false
+  showCount : Bool := false
+  filePaths : List String := []
+deriving Repr, BEq
+```
+
+示例：02-json-parser 的 `ParseState`（`Parser.lean`）：
+
+```lean
+structure ParseState where
+  src : Array Char
+  pos : Nat := 0
+deriving Repr
+```
 
 ## 相关概念
 

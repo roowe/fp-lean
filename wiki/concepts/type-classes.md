@@ -1,7 +1,7 @@
 ---
 title: 类型类（Type Classes）
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [type-class, polymorphism]
 sources: [book/FPLean/TypeClasses/Polymorphism.lean, book/FPLean/TypeClasses/Pos.lean, book/FPLean/TypeClasses/OutParams.lean, book/FPLean/TypeClasses/Indexing.lean, book/FPLean/TypeClasses/StandardClasses.lean, book/FPLean/TypeClasses/Coercions.lean]
@@ -128,6 +128,35 @@ deriving instance BEq, Hashable, Repr for Pos
 | `DecidableEq` | 可判定相等（编译期 `x = y` 命题） |
 | `Nonempty` | 证明类型非空（`mutual` + `partial` 块需要） |
 | `Ord` | 三路比较 |
+
+## 项目实践
+
+| 项目 | 使用的类型类 |
+|------|-------------|
+| 01-calc | `deriving Repr, BEq, Nonempty`；手动实现 `ToString` |
+| 02-json-parser | `deriving Repr, BEq`；手动实现 `Functor`/`Applicative` for `Validate` |
+| 05-safe-sort | `Ord` 类型类（`insertSorted [Ord α]`） |
+| 07-formal-verify | `Ord`、`DecidableEq`、`BEq`（`insert`/`insertionSort` 参数约束） |
+| 08-type-checker | `deriving Repr, DecidableEq, BEq` for `Ty`；手动实现 `ToString` |
+
+**02-json-parser — 手动实现 Functor/Applicative（JsonParser/Validate.lean）**
+
+```lean
+instance : Functor (Validate ε) where
+  map f
+    | .ok a => .ok (f a)
+    | .errors errs => .errors errs
+
+instance : Applicative (Validate ε) where
+  pure := .ok
+  seq f x :=
+    match f with
+    | .ok g => g <$> (x ())
+    | .errors errs =>
+      match x () with
+      | .ok _ => .errors errs
+      | .errors errs' => .errors (errs ++ errs')
+```
 
 ## 相关概念
 

@@ -1,7 +1,7 @@
 ---
 title: 归纳数据类型与模式匹配
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [pattern-matching, lean-syntax, getting-started]
 sources: [book/FPLean/GettingToKnow/DatatypesPatterns.lean]
@@ -104,6 +104,54 @@ inductive Option (α : Type) where
 ```
 
 详见 [[list-type]]、[[option-type]]、[[prod-type]]、[[sum-type]]。
+
+## 项目实践
+
+所有 8 个项目都使用了归纳数据类型和模式匹配。
+
+| 项目 | 用法 |
+|------|------|
+| 01-calc | `Expr` 归纳类型，模式匹配求值 |
+| 02-json-parser | `JValue` 归纳类型，模式匹配解析/查询 |
+| 03-grep | `Config` 结构体模式匹配，`Except` 分支处理 |
+| 04-eval-prove | `Expr` 归纳类型，`simplify` 模式匹配 |
+| 05-safe-sort | `Ord.compare` 结果模式匹配，`Fin` 模式匹配 |
+| 06-typed-db | `DBType`、`HasColumn`、`Subschema`、`Query` 等索引类型族 |
+| 07-formal-verify | `insert`/`insertionSort` 模式匹配，策略证明中 `split` |
+| 08-type-checker | `Expr`、`Ty` 归纳类型，`CheckResult` 依赖类型模式匹配 |
+
+**01-calc — 表达式 AST（Calc/Expr.lean）**
+
+```lean
+inductive Expr where
+  | num : Int → Expr
+  | add : Expr → Expr → Expr
+  | sub : Expr → Expr → Expr
+  | mul : Expr → Expr → Expr
+  | div : Expr → Expr → Expr
+  | neg : Expr → Expr
+deriving Repr, BEq, Nonempty
+```
+
+**08-type-checker — 依赖类型的检查结果（TypeChecker/Typecheck.lean）**
+
+```lean
+inductive CheckResult : Context → Expr → Ty → Type where
+  | num : (n : Nat) → CheckResult ctx (.num n) .nat
+  | bool : (b : Bool) → CheckResult ctx (.bool b) .bool
+  | var : HasType ctx x ty → CheckResult ctx (.var x) ty
+  | add :
+      CheckResult ctx a .nat →
+      CheckResult ctx b .nat →
+      CheckResult ctx (.add a b) .nat
+  | lam :
+      CheckResult (ctx.bind x ty) body retTy →
+      CheckResult ctx (.lam x ty body) (.fn ty retTy)
+  | app :
+      CheckResult ctx f (.fn argTy retTy) →
+      CheckResult ctx arg argTy →
+      CheckResult ctx (.app f arg) retTy
+```
 
 ## 相关概念
 

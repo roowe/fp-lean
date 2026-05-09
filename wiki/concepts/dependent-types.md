@@ -1,7 +1,7 @@
 ---
 title: 依赖类型（Dependent Types）
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [dependent-types, indexed-family, universe]
 sources: [book/FPLean/DependentTypes/IndexedFamilies.lean, book/FPLean/DependentTypes/UniversePattern.lean, book/FPLean/DependentTypes/TypedQueries.lean, book/FPLean/DependentTypes/IndicesParametersUniverses.lean, book/FPLean/DependentTypes/Pitfalls.lean]
@@ -131,6 +131,36 @@ inductive Env : Context → Type where
 
 ```lean
 def lookup : HasType ctx x ty → Env ctx → ty.asType
+```
+
+## 项目实践
+
+### 06-typed-db — 用依赖类型保证查询安全
+
+用索引类型族编码数据库约束，编译期拒绝非法查询：
+
+```lean
+inductive HasColumn : String → DBType → Schema → Type where
+  | here : HasColumn n t (⟨n, t⟩ :: _)
+  | there : HasColumn n t s → HasColumn n t (_ :: s)
+
+inductive Query : Schema → Type where
+  | table : (s : Schema) → Query s
+  | select : Query s → (Row s → Bool) → Query s
+  | project : Query s → (s' : Schema) → Subschema s' s → Query s'
+  | product : Query s1 → Query s2 → Disjoint s1 s2 → Query (s1 ++ s2)
+```
+
+`product` 必须提供 `Disjoint` 证明——编译期保证两个表没有同名列。
+
+### 08-type-checker — 依赖类型求值器
+
+`HasType` 作为"钥匙"保证只有类型正确的表达式才能被求值：
+
+```lean
+inductive HasType : Context → String → Ty → Type where
+  | here : HasType ((x, t) :: ctx) x t
+  | there : HasType ctx x t → HasType (entry :: ctx) x t
 ```
 
 ## 相关概念

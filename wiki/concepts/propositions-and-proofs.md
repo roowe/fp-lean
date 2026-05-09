@@ -1,7 +1,7 @@
 ---
 title: 命题与证明
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [proposition, proof, tactic]
 sources: [book/FPLean/PropsProofsIndexing.lean]
@@ -80,6 +80,29 @@ def third (xs : List α) (ok : xs.length > 2) : α := xs[2]
 | `xs[i]` | 编译期需要证据（最安全） |
 | `xs[i]?` | 返回 `Option`（`none` 表示越界） |
 | `xs[i]!` | 运行时 panic |
+
+## 项目实践
+
+命题与证明在以下项目中发挥核心作用：
+
+- **04-eval-prove** — `simplify_correct`、`simplify_idempotent` 等正确性定理
+- **05-safe-sort** — `insertSorted_size`、`Sorted` 等排序性质
+- **07-formal-verify** — 大量定理证明练习
+- **08-type-checker** — `example` 作为编译期测试
+
+示例：04-eval-prove 证明化简保持语义（`Proofs.lean`）：
+
+```lean
+theorem simplify_correct :
+    ∀ (env : Env) (e : Expr), eval env (simplify e) = eval env e := by
+  intro env e
+  induction e with
+  | num n => rfl
+  | var x => rfl
+  | add a b ih_a ih_b => unfold simplify; repeat' split <;> simp_all [eval] <;> omega
+  | mul a b ih_a ih_b => grind [simplify, eval]
+  | neg a ih_a => unfold simplify; generalize hsa : a.simplify = sa; cases sa <;> simp_all [eval]
+```
 
 ## 相关概念
 

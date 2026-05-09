@@ -1,7 +1,7 @@
 ---
 title: 终止性证明
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [termination, proof, array, recursion]
 sources: [book/FPLean/ProgramsProofs/ArraysTermination.lean, book/FPLean/ProgramsProofs/Inequalities.lean, book/FPLean/ProgramsProofs/Fin.lean, book/FPLean/ProgramsProofs/InsertionSort.lean, book/FPLean/ProgramsProofs/SpecialTypes.lean]
@@ -97,6 +97,26 @@ Lean 在运行时对某些类型有特殊表示（高效实现）：
 | `UInt32` 等 | 机器字 |
 
 **类型和证明在运行时被擦除**——零性能开销。单字段结构体的构造器消失，无数据字段的构造器变为常量值。
+
+## 项目实践
+
+### 05-safe-sort — 用 Fin 和 have 证明数组操作安全
+
+`insertSorted` 用 `Fin arr.size` 保证索引合法，`termination_by` 声明递归度量，`have` 嵌入局部证明：
+
+```lean
+def insertSorted [Ord α] (arr : Array α) (i : Fin arr.size) : Array α :=
+  match i with
+  | ⟨0, _⟩ => arr
+  | ⟨i' + 1, _⟩ =>
+    have : i' < arr.size := by grind
+    match Ord.compare arr[i'] arr[i] with
+    | .lt | .eq => arr
+    | .gt => insertSorted (arr.swap i' i) ⟨i', by simp [*]⟩
+termination_by i.val
+```
+
+`termination_by i.val` 告诉 Lean：每次递归调用 `i.val` 严格递减，因此函数终止。`⟨i', by simp [*]⟩` 在递归调用处构造新的 `Fin` 证明。
 
 ## 相关概念
 

@@ -1,7 +1,7 @@
 ---
 title: 单子（Monads）
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [monad, functor, applicative]
 sources: [book/FPLean/Monads/Arithmetic.lean, book/FPLean/Monads/Class.lean, book/FPLean/Monads/Do.lean, book/FPLean/Monads/IO.lean]
@@ -222,6 +222,39 @@ def mapM [Monad m] (f : α → m β) : List α → m (List β)
   | [] => pure []
   | x :: xs => do
     pure ((← f x) :: (← mapM f xs))
+```
+
+## 项目实践
+
+| 项目 | 使用的 Monad |
+|------|-------------|
+| 01-calc | `Except String Int` 做表达式求值，do 记法链接步骤 |
+| 02-json-parser | `Option` 做查询链（`lookup >>= index`），do 记法写测试 |
+| 03-grep | `ReaderT Config (ExceptT String Id)` 单子栈 |
+| 04-eval-prove | `Except String Int` 做安全求值（`evalSafe`） |
+
+**01-calc — Except 单子做求值（Calc/Eval.lean）**
+
+```lean
+def Expr.eval : Expr → Except String Int
+  | .num n => .ok n
+  | .add a b => do let va ← a.eval; let vb ← b.eval; .ok (va + vb)
+  | .div a b => do
+    let vb ← b.eval
+    if vb = 0 then .error "除数不能为零"
+    else let va ← a.eval; .ok (va / vb)
+```
+
+**03-grep — ReaderT + ExceptT 单子栈（MiniGrep/Search.lean）**
+
+```lean
+abbrev SearchM := ReaderT Config (ExceptT String Id)
+
+def matchLine (line : String) : SearchM Bool := do
+  let cfg ← read  -- 从 ReaderT 环境读取配置
+  let pat := if cfg.ignoreCase then cfg.pattern.toLower else cfg.pattern
+  let target := if cfg.ignoreCase then line.toLower else line
+  return target.contains pat
 ```
 
 ## 相关概念

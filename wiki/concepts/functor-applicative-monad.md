@@ -1,7 +1,7 @@
 ---
 title: Functor / Applicative / Monad 层级
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [functor, applicative, monad, type-class]
 sources: [book/FPLean/FunctorApplicativeMonad/Inheritance.lean, book/FPLean/FunctorApplicativeMonad/Applicative.lean, book/FPLean/FunctorApplicativeMonad/ApplicativeContract.lean, book/FPLean/FunctorApplicativeMonad/Alternative.lean, book/FPLean/FunctorApplicativeMonad/Universes.lean, book/FPLean/FunctorApplicativeMonad/Complete.lean]
@@ -140,6 +140,24 @@ def guard [Alternative f] (p : Prop) [Decidable p] : f Unit :=
 - 菱形问题自动坍缩
 
 详见 [[type-classes]] 和 [[structures]]。
+
+## 项目实践
+
+### 02-json-parser — Validate 作为 Applicative（非 Monad）
+
+`Validate` 的 `seq` 实现会累积所有错误而非遇到第一个就停止，这是它**不能**成为 Monad 的原因：
+
+```lean
+instance : Applicative (Validate ε) where
+  pure := .ok
+  seq f x := match f with
+    | .ok g => g <$> (x ())
+    | .errors errs => match x () with
+      | .ok _ => .errors errs
+      | .errors errs' => .errors (errs ++ errs')  -- 累积错误！
+```
+
+如果 `Validate` 也是 Monad（`bind` 遇错即停），就会与 `seq` 的累积行为矛盾，违反 Applicative-Monad 一致性约束。
 
 ## 相关概念
 

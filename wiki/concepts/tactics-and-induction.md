@@ -1,7 +1,7 @@
 ---
 title: 策略与归纳证明
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [tactic, proof, induction]
 sources: [book/FPLean/TacticsInductionProofs.lean]
@@ -133,6 +133,37 @@ theorem non_tail_sum_eq_helper_accum (xs : List Nat) :
 ```
 
 详见 [[tail-recursion]]。
+
+## 项目实践
+
+策略与归纳证明在以下项目中大量使用：
+
+- **04-eval-prove** — `induction`、`grind`、`split` 等策略
+- **05-safe-sort** — `fun_induction`、`grind`
+- **07-formal-verify** — `induction`、`simp`、`exact`、`match` 风格证明
+
+示例：07-formal-verify 用 `match` 做结构性证明（`ListProps.lean`）：
+
+```lean
+theorem eraseDups_length_le [BEq α] (xs : List α) :
+    xs.eraseDups.length ≤ xs.length := by
+  match xs with
+  | [] => simp
+  | x :: xs =>
+    rw [List.eraseDups_cons]
+    apply Nat.succ_le_succ
+    exact Nat.le_trans (eraseDups_length_le (xs.filter fun y => !y == x))
+      (List.length_filter_le (fun y => !y == y) xs)
+termination_by xs.length
+```
+
+示例：05-safe-sort 用 `fun_induction` 按函数结构归纳（`Basic.lean`）：
+
+```lean
+theorem insertSorted_size [Ord α] (arr : Array α) (i : Fin arr.size) :
+    (insertSorted arr i).size = arr.size := by
+  fun_induction insertSorted <;> grind [Array.size_swap]
+```
 
 ## 相关概念
 

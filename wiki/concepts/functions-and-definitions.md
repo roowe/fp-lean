@@ -1,7 +1,7 @@
 ---
 title: 函数与定义
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: concept
 tags: [functions, lean-syntax, getting-started]
 sources: [book/FPLean/GettingToKnow/FunctionsDefinitions.lean]
@@ -87,6 +87,49 @@ private def isDigit (c : Char) : Bool := c.isDigit
 ```
 
 `private` 限制定义为模块内部可见，外部无法调用。
+
+## 项目实践
+
+除 06-typed-db 外，所有项目都大量使用函数定义的各种语法。
+
+| 项目 | 关键用法 |
+|------|---------|
+| 01-calc | `def` + 模式匹配定义 `eval`/`toString`；`let rec` 递归解析器 |
+| 02-json-parser | `mutual` ... `end` 互递归函数；`where` 辅助定义 |
+| 03-grep | `let rec loop` 局部递归；`where` 子句在 `parseArgs` 中 |
+| 04-eval-prove | `def` + 模式匹配定义 `simplify`/`eval`/`evalSafe` |
+| 05-safe-sort | `have : ... := by grind` 局部证明绑定 |
+| 07-formal-verify | `by` 策略块定义证明函数 |
+| 08-type-checker | `def` + 模式匹配定义 `typeCheck`/`eval`；`bif` 条件求值 |
+
+**04-eval-prove — 模式匹配 + do 记法定义 evalSafe（EvalProve/Eval.lean）**
+
+```lean
+def Expr.evalSafe (env : String → Option Int) : Expr → Except String Int
+  | .num n => .ok n
+  | .var x =>
+    match env x with
+    | some v => .ok v
+    | none => .error s!"未绑定变量: {x}"
+  | .add a b => do
+    let va ← evalSafe env a
+    let vb ← evalSafe env b
+    return va + vb
+```
+
+**03-grep — where 子句 + let rec（MiniGrep/Config.lean）**
+
+```lean
+def parseArgs (args : List String) : Except String Config :=
+  let rec loop (optMode : Bool) (pat? : Option String)
+      (cfg : Config) (xs : List String) : Except String Config :=
+    match xs with
+    | [] => match pat? with
+      | none => throw "No pattern provided"
+      | some pat => return { cfg with pattern := pat }
+    | tok :: rest => ...
+  loop true none { pattern := "" } args
+```
 
 ### open ... in 局部打开
 

@@ -1,7 +1,7 @@
 ---
 title: Monad vs Applicative vs Functor
 created: 2026-05-04
-updated: 2026-05-04
+updated: 2026-05-09
 type: comparison
 tags: [functor, applicative, monad, comparison]
 sources: [book/FPLean/FunctorApplicativeMonad/ApplicativeContract.lean]
@@ -52,6 +52,31 @@ x >>= fun v => if v > 0 then computeA v else computeB v
 
 - **API 使用最弱抽象**：如果只需要 `map`，用 `Functor` 约束而非 `Monad`
 - **实例提供最强实现**：如果类型可以成为 Monad，就提供 Monad 实例
+
+## 项目实践
+
+> 02-json-parser 项目中 `Validate` 是本系列唯一「Applicative 但非 Monad」的类型，完美展示了两者的区别。
+
+`Validate` 用 Applicative 的 `seq` 累积所有错误（不短路），这用 Monad 的 `bind` 无法实现——`bind` 要求看到前步结果才能决定后续计算，而错误累积需要**同时**收集所有错误：
+
+```lean
+-- 02-json-parser/JsonParser/Validate.lean
+instance : Applicative (Validate ε) where
+  seq f x := match f with
+    | .ok g => g <$> (x ())
+    | .errors errs => match x () with
+      | .ok _ => .errors errs           -- 只保留函数的错误
+      | .errors errs' => .errors (errs ++ errs')  -- 合并双方的错误
+```
+
+相比之下，01-calc 和 04-eval-prove 中的 `Except` 是 Monad——遇到第一个错误就停止（短路），适合**只需要第一个错误**的场景。
+
+| 项目 | 类型 | 层级 | 用途 |
+|------|------|------|------|
+| 01-calc | `Except String` | Monad | 除零错误，遇到即停 |
+| 02-json-parser | `Validate String` | Applicative（非 Monad） | 解析错误累积 |
+| 03-grep | `ReaderT + ExceptT` | Monad 变换器栈 | 配置传递 + 错误处理 |
+| 04-eval-prove | `Except String` | Monad | 未绑定变量错误 |
 
 ## 相关概念
 

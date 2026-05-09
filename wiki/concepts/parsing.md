@@ -144,6 +144,50 @@ def JValue.toString : JValue → String
 | 前置知识 | 少 | 少 | 需要 Monad |
 | 适用场景 | 学习、简单语法 | 运算符多的语言 | 复杂语法、工业级 |
 
+## 项目实践
+
+### 01-calc — 递归下降解析器
+
+用 `mutual` 互递归实现三层优先级（expr > term > factor），`partial def` 允许非结构递归：
+
+```lean
+mutual
+partial def parseExpr : Parser Expr := fun input => do
+  let (lhs, rest) ← parseTerm input
+  parseExprAux lhs rest
+
+partial def parseTerm : Parser Expr := fun input => do
+  let (lhs, rest) ← parseFactor input
+  parseTermAux lhs rest
+
+partial def parseFactor : Parser Expr := fun input =>
+  match input with
+  | '(' :: rest => do
+    let (e, rest') ← parseExpr rest
+    match rest' with | ')' :: rest'' => pure (e, rest'') | ...
+  | '-' :: rest => do let (e, rest') ← parseFactor rest; pure (Expr.neg e, rest')
+  | ...
+end
+```
+
+### 02-json-parser — Fuel 模式的互递归解析器
+
+用 `Nat` 作为 fuel 防止无限递归，配合 `Validate` 累积解析错误：
+
+```lean
+def parseValueFuel (fuel : Nat) (st : ParseState) : Validate String (Nat × JValue) :=
+  match fuel with
+  | 0 => .errors ["Exceeded fuel limit"]
+  | fuel + 1 =>
+    let i := skipWS st st.pos
+    match peek? st i with
+    | some '{' => parseObjectFuel fuel {st with pos := i}
+    | some '[' => parseArrayFuel fuel {st with pos := i}
+    | some '"' => match parseStringLit st i with
+      | .ok (j, s) => .ok (j, JValue.string s) | .errors e => .errors e
+    | ...
+```
+
 ## 相关概念
 
 - [[monads]] — Parser Monad 的基础
