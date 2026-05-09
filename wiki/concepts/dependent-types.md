@@ -90,6 +90,49 @@ def appendR : Vect α n → Vect α k → Vect α (n.plusR k)
 | **定义相等** | 编译器自动识别 | `1 + 1` 和 `2` |
 | **命题相等** | 需要显式证明 | `k = Nat.plusR 0 k` |
 
+## 高级模式：证明作为参数
+
+依赖类型可以将正确性证明编码在类型中，编译期保证程序正确：
+
+### 证明作为构造子参数
+
+```lean
+-- Subschema 的 cons 需要证明"列存在于上层 Schema"
+inductive Subschema : Schema → Schema → Type where
+  | cons : HasColumn n t super → Subschema sub super → Subschema (⟨n, t⟩ :: sub) super
+
+-- Disjoint 的 cons 需要证明"列名不重叠"
+inductive Disjoint : Schema → Schema → Type where
+  | cons : NameNotIn n s2 → Disjoint s1 s2 → Disjoint (⟨n, t⟩ :: s1) s2
+```
+
+调用时必须同时提供正确性证明，否则编译不过。
+
+### 依赖类型求值器
+
+```lean
+-- eval 的返回类型 ty.asType 依赖参数 ty
+def eval : (ctx : Context) → (e : Expr) → (ty : Ty) →
+    CheckResult ctx e ty → Env ctx → ty.asType
+-- 传入 .nat 返回 Nat，传入 .bool 返回 Bool
+```
+
+只有通过类型检查（持有 `CheckResult`）的项才能被求值，从架构上杜绝类型错误。
+
+### 依赖类型环境
+
+```lean
+-- ty.asType 出现在构造子参数里
+inductive Env : Context → Type where
+  | cons : (ty : Ty) → ty.asType → Env ctx → Env ((x, ty) :: ctx)
+```
+
+用 `HasType` 证明作为"钥匙"安全取值：
+
+```lean
+def lookup : HasType ctx x ty → Env ctx → ty.asType
+```
+
 ## 相关概念
 
 - [[polymorphism]] — 参数化多态（依赖类型的基础版）

@@ -64,6 +64,37 @@ def unzip : List (α × β) → List α × List β
 | `(· + 1)` | 匿名函数简写 |
 | `let x := e` | 局部绑定 |
 | `let rec f ...` | 递归局部绑定 |
+| `where` | 函数后附带的局部定义 |
+| `private` | 限制为模块内部可见 |
+| `open ... in` | 单个定义内打开命名空间 |
+
+### where 子句
+
+```lean
+def parseExpr (minPrec : Nat) (chars : List Char) : ... :=
+  ... 使用 parseAtom 和 parseExprRest ...
+where
+  parseAtom ... := ...
+  parseExprRest ... := ...
+```
+
+`where` 定义的函数只在该函数内可见，类似 `let rec` 但写在函数后面，不增加缩进层级。
+
+### private 可见性
+
+```lean
+private def isDigit (c : Char) : Bool := c.isDigit
+```
+
+`private` 限制定义为模块内部可见，外部无法调用。
+
+### open ... in 局部打开
+
+```lean
+open ParseState in
+def parseNull (s : ParseState) : ... := ...
+-- 只在这个定义内打开了 ParseState 命名空间
+```
 
 ## 相关概念
 

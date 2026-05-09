@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "index.md",
+                "file": "concepts/monads.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "monads"
             }
           },
           {
@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "concepts/functor-applicative-monad.md",
+                "file": "concepts/tactics-and-induction.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "functor-applicative-monad"
+              "title": "tactics-and-induction"
             }
           },
           {
@@ -78,7 +78,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -151,7 +151,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "index.md",
+                "file": "concepts/monads.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -161,7 +161,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "index 的反向链接列表"
+              "title": "monads 的反向链接列表"
             }
           },
           {
@@ -212,13 +212,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "index.md",
+                "file": "concepts/tactics-and-induction.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "index 的大纲"
+              "title": "tactics-and-induction 的大纲"
             }
           }
         ],
@@ -239,13 +239,13 @@
       "bases:新建数据库": false
     }
   },
-  "active": "9e781c9c15c73ffc",
+  "active": "60a8c4147b0fdb4b",
   "lastOpenFiles": [
+    "index.md",
     "concepts/functor-applicative-monad.md",
     "concepts/monads.md",
-    "index.md",
-    "concepts/io-and-side-effects.md",
     "concepts/type-classes.md",
+    "concepts/io-and-side-effects.md",
     "concepts/polymorphism.md",
     "concepts/datatypes-pattern-matching.md",
     "concepts/structures.md",

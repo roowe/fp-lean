@@ -25,6 +25,21 @@ termination_by arr.size - i
 
 `termination_by` 声明一个在每次递归调用时严格递减的自然数度量。`termination_by?` 让 Lean 建议度量。
 
+### decreasing_by
+
+`termination_by` 声明度量，`decreasing_by` 手动证明度量递减（当 Lean 无法自动推断时）：
+
+```lean
+def insertSortLoop [Ord α] (arr : Array α) (i : Nat) (h : i ≤ arr.size) : Array α :=
+  if h' : i < arr.size then
+    insertSortLoop (insertSorted arr ⟨i, h'⟩) (i + 1) (by grind [insertSorted_size])
+  else arr
+termination_by arr.size - i
+decreasing_by grind [insertSorted_size]
+```
+
+大多数情况下 `grind` 或 `simp` 就够用。复杂场景需要手动提供引理。
+
 ## have 表达式
 
 在递归函数中嵌入局部证明：

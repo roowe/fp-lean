@@ -28,6 +28,19 @@ sources: [book/FPLean/MonadTransformers/ReaderIO.lean, book/FPLean/MonadTransfor
 abbrev ConfigIO (α : Type) : Type := ReaderT Config IO α
 ```
 
+## .run 解包变换器
+
+变换器堆叠后，用 `.run` 逐层剥开得到最终结果：
+
+```lean
+-- SearchM := ReaderT Config (ExceptT String Id)
+let result := (searchLines lines).run config |> ExceptT.run
+-- .run config : ExceptT String Id (Array (Nat × String))
+-- |> ExceptT.run : Except String (Array (Nat × String))
+```
+
+从外到内：`ReaderT.run` 传入配置，`ExceptT.run` 取出 `Except` 值。
+
 ## MonadLift — 单子提升
 
 `monadLift` 将内层 Monad 的动作提升到变换后的 Monad：
