@@ -241,6 +241,9 @@
   },
   "active": "60a8c4147b0fdb4b",
   "lastOpenFiles": [
+    "concepts/parsing.md",
+    "entities/string-type.md",
+    "entities/array-type.md",
     "index.md",
     "concepts/functor-applicative-monad.md",
     "concepts/monads.md",

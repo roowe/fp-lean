@@ -2,7 +2,7 @@
 
 > 内容目录。每个 wiki 页面按类型分类，附一行摘要。
 > 阅读此文件快速定位相关页面。
-> Last updated: 2026-05-04 | Total pages: 20
+> Last updated: 2026-05-09 | Total pages: 23
 
 ## Concepts
 <!-- 按学习顺序排列（依赖关系从上到下） -->
@@ -25,6 +25,7 @@
 - [[tail-recursion]] — ❄️未涉及(0/11) · 累加器传递风格、尾调用消除、等价性证明
 - [[termination-proofs]] — 🧊低频(2/11) · termination_by、have 表达式、Fin 安全索引、sorry
 - [[universes]] — 🧊低频(1/11) · 宇宙层级、宇宙多态、Sort、Girard 悖论
+- [[parsing]] — 📦常规(5/11) · 递归下降、Pratt 优先级爬升、Parser Monad + 组合子、错误恢复
 
 ## Entities
 
@@ -32,6 +33,8 @@
 - [[option-type]] — Option 可选类型，`some`/`none`，安全查找
 - [[prod-type]] — Prod 积类型 `α × β`，配对值
 - [[sum-type]] — Sum 和类型 `α ⊕ β`，二选一
+- [[array-type]] — Array 动态数组，`#[1, 2, 3]`，for 循环
+- [[string-type]] — String 字符串操作，`toList`/`ofList`，`splitOn`，转义序列
 
 ## Comparisons
 

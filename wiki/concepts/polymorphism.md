@@ -61,6 +61,27 @@ def posOrNegThree (s : Sign) :
 
 Lean 根据上下文自动确定类型参数，但函数参数通常需要注解。当 Lean 无法确定类型时，会生成**元变量**（`?m.XYZ`）。
 
+## 数值类型转换
+
+Lean 的数值类型不自动转换，需要显式操作：
+
+| 转换 | 方法 | 说明 |
+|------|------|------|
+| Nat → Int | `Int.ofNat n` 或 `(n : Int)` | 自然数转整数（向上转型） |
+| Nat → Float | `Float.ofNat n` | 自然数转浮点 |
+| String → Nat | `"123".toNat?` | 返回 `Option Nat`，失败为 `none` |
+| Nat → Char | `Char.ofNat cp` | 码点转字符（Unicode） |
+| Float 构造 | `Float.ofScientific mant neg exp` | 科学计数法构造浮点数 |
+
+```lean
+-- Nat 和 Int 混合运算需要显式转换
+let x : Nat := 5
+let y : Int := -(Int.ofNat x)    -- Nat → Int，然后取负
+
+-- 科学计数法构造浮点
+Float.ofScientific 314 false (-2)  -- 3.14
+```
+
 ## 相关概念
 
 - [[evaluation-and-types]] — 类型基础
