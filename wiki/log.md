@@ -24,3 +24,9 @@
 - 为 array-type 实体页添加项目实践（05-safe-sort Fin + swap）
 - 概念页 frontmatter updated 日期更新为 2026-05-09
 - Updated: index.md, log.md, 全部 concept 页面, monad-vs-applicative.md, array-type.md (total: 25 pages)
+
+## [2026-05-09] create | 项目难点分析页面
+- 新建 queries/project-pitfalls.md，记录 8 个项目的 10 个核心卡点
+- 按难度排序，每个卡点附关键代码和钻研建议
+- 更新 index.md 的 Queries 分类
+- Updated: index.md, log.md

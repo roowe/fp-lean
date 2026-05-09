@@ -10,14 +10,14 @@
 
 | # | 项目 | 核心主题 | 关键技术 |
 |---|------|---------|---------|
-| 01 | [命令行计算器](https://github.com/luoliwei/fp-lean/tree/master/01-calc) | 表达式解析与求值 | 归纳类型、Except 单子、递归下降解析器 |
-| 02 | [JSON 解析器](https://github.com/luoliwei/fp-lean/tree/master/02-json-parser) | 解析 + 错误累积 | Validate Applicative、mutual recursion、fuel 模式 |
-| 03 | [小型 grep](https://github.com/luoliwei/fp-lean/tree/master/03-grep) | 文件搜索工具 | ReaderT + ExceptT 变换器栈、IO |
-| 04 | [表达式求值器 + 证明](https://github.com/luoliwei/fp-lean/tree/master/04-eval-prove) | 求值与化简正确性 | 表达式化简、induction + grind 证明 |
-| 05 | [安全数组排序](https://github.com/luoliwei/fp-lean/tree/master/05-safe-sort) | 终止性 + 索引安全 | Fin、termination_by、fun_induction |
-| 06 | [带类型的迷你数据库](https://github.com/luoliwei/fp-lean/tree/master/06-typed-db) | 编译期类型安全 | 索引类型族、宇宙模式、依赖类型 |
-| 07 | [形式化验证练习](https://github.com/luoliwei/fp-lean/tree/master/07-formal-verify) | 定理证明实战 | 列表性质、排序性质、字符串性质 |
-| 08 | [类型检查器](https://github.com/luoliwei/fp-lean/tree/master/08-type-checker) | STLC 类型推导 | HasType 索引族、CheckResult、依赖模式匹配 |
+| 01 | [命令行计算器](https://github.com/DrumstickLab/lean-fp-demos/tree/main/01-calc) | 表达式解析与求值 | 归纳类型、Except 单子、递归下降解析器 |
+| 02 | [JSON 解析器](https://github.com/DrumstickLab/lean-fp-demos/tree/main/02-json-parser) | 解析 + 错误累积 | Validate Applicative、mutual recursion、fuel 模式 |
+| 03 | [小型 grep](https://github.com/DrumstickLab/lean-fp-demos/tree/main/03-grep) | 文件搜索工具 | ReaderT + ExceptT 变换器栈、IO |
+| 04 | [表达式求值器 + 证明](https://github.com/DrumstickLab/lean-fp-demos/tree/main/04-eval-prove) | 求值与化简正确性 | 表达式化简、induction + grind 证明 |
+| 05 | [安全数组排序](https://github.com/DrumstickLab/lean-fp-demos/tree/main/05-safe-sort) | 终止性 + 索引安全 | Fin、termination_by、fun_induction |
+| 06 | [带类型的迷你数据库](https://github.com/DrumstickLab/lean-fp-demos/tree/main/06-typed-db) | 编译期类型安全 | 索引类型族、宇宙模式、依赖类型 |
+| 07 | [形式化验证练习](https://github.com/DrumstickLab/lean-fp-demos/tree/main/07-formal-verify) | 定理证明实战 | 列表性质、排序性质、字符串性质 |
+| 08 | [类型检查器](https://github.com/DrumstickLab/lean-fp-demos/tree/main/08-type-checker) | STLC 类型推导 | HasType 索引族、CheckResult、依赖模式匹配 |
 
 ## Concepts
 <!-- 按学习顺序排列（依赖关系从上到下） -->
@@ -57,4 +57,5 @@
 - [[definitional-vs-propositional-equality]] — 定义相等 vs 命题相等、计算卡住问题
 
 ## Queries
-<!-- 暂无 -->
+
+- [[project-pitfalls]] — 8 个项目的难点分析与钻研指南（按难度排序）
