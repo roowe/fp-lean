@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "queries/project-pitfalls.md",
+                "file": "concepts/tactics-and-induction.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "project-pitfalls"
+              "title": "tactics-and-induction"
             }
           }
         ]
@@ -155,13 +155,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "queries/project-pitfalls.md",
+                "file": "concepts/tactics-and-induction.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "project-pitfalls 的大纲"
+              "title": "tactics-and-induction 的大纲"
             }
           }
         ],
@@ -184,10 +184,10 @@
   },
   "active": "60a8c4147b0fdb4b",
   "lastOpenFiles": [
+    "queries/project-pitfalls.md",
     "comparisons/monad-vs-applicative.md",
     "comparisons/definitional-vs-propositional-equality.md",
     "concepts/datatypes-pattern-matching.md",
-    "queries/project-pitfalls.md",
     "index.md",
     "concepts/tactics-and-induction.md",
     "concepts/parsing.md",

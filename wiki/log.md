@@ -25,6 +25,13 @@
 - 概念页 frontmatter updated 日期更新为 2026-05-09
 - Updated: index.md, log.md, 全部 concept 页面, monad-vs-applicative.md, array-type.md (total: 25 pages)
 
+## [2026-05-10] update | tactics-and-induction 策略速查大幅扩充
+- 重写 concepts/tactics-and-induction.md，从简单表格扩充为详细速查
+- 每个策略含：一句话解释、什么时候用、项目真实代码、注意事项
+- 新增：证明工作流决策树、组合子详解、标准库引理速查表
+- 基于全部 8 项目的 tactic 使用统计（20+ 种策略，按频率排序）
+- Updated: concepts/tactics-and-induction.md, log.md
+
 ## [2026-05-09] create | 项目难点分析页面
 - 新建 queries/project-pitfalls.md，记录 8 个项目的 10 个核心卡点
 - 按难度排序，每个卡点附关键代码和钻研建议
